@@ -21,11 +21,12 @@ public class PersonController {
     }
 
     @PostMapping("/person")
-    public String savePerson(@RequestBody PersonDto personDto){
-        Person newPerson = personService.savePerson(personDto);
-        System.out.println(newPerson.getDocument());
+    public String savePerson(@RequestBody PersonDto personDto) throws Exception {
+       // Person newPerson = personService.savePerson(personDto);
         String xml = personService.JsonToXml(personDto);
-        personService.saveAnswerXml(xml, newPerson);
+        System.out.println(xml);
+        System.out.println(personService.sendRequestToSoap(xml));
+        //personService.saveAnswerXml(xml, newPerson);
         return "ooo";
     }
 }
