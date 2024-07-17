@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:tns="http://soapapp.com/soapapp">
 
-    <!-- Match the root element 'person' -->
-    <xsl:template match="/person">
-        <xsl:element name="person">
+    <xsl:output method="xml" indent="yes"/>
+
+    <xsl:template match="tns:getPersonRequest">
+        <person>
             <xsl:attribute name="name">
-                <xsl:value-of select="name"/>
+                <xsl:value-of select="person/name"/>
             </xsl:attribute>
             <xsl:attribute name="surname">
-                <xsl:value-of select="surname"/>
+                <xsl:value-of select="person/surname"/>
             </xsl:attribute>
             <xsl:attribute name="patronymic">
-                <xsl:value-of select="patronymic"/>
+                <xsl:value-of select="person/patronymic"/>
             </xsl:attribute>
             <xsl:attribute name="birthDate">
-                <xsl:value-of select="birthDate"/>
+                <xsl:value-of select="person/birthDate"/>
             </xsl:attribute>
             <xsl:attribute name="gender">
-                <xsl:value-of select="gender"/>
+                <xsl:value-of select="person/gender"/>
             </xsl:attribute>
-            <xsl:element name="document">
+            <document>
                 <xsl:attribute name="series">
-                    <xsl:value-of select="document/series"/>
+                    <xsl:value-of select="person/document/series"/>
                 </xsl:attribute>
                 <xsl:attribute name="number">
-                    <xsl:value-of select="document/number"/>
+                    <xsl:value-of select="person/document/number"/>
                 </xsl:attribute>
                 <xsl:attribute name="type">
-                    <xsl:value-of select="document/type"/>
+                    <xsl:value-of select="person/document/type"/>
                 </xsl:attribute>
                 <xsl:attribute name="issueDate">
-                    <xsl:value-of select="document/issueDate"/>
+                    <xsl:value-of select="person/document/issueDate"/>
                 </xsl:attribute>
-            </xsl:element>
-        </xsl:element>
+            </document>
+        </person>
     </xsl:template>
+
 </xsl:stylesheet>
