@@ -16,10 +16,10 @@ public class AnswerXmlDAO {
         this.sessionFactory = sessionFactory;
     }
 
-    public void saveAnswerXml(String xml, Person newPerson){
+    public void saveAnswerXml(AnswerXml answerXml){
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
-        session.persist(new AnswerXml(xml, newPerson));
+        session.persist(answerXml);
         session.getTransaction().commit();
     }
 }
