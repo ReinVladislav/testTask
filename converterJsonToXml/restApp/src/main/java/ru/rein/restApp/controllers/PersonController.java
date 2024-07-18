@@ -32,7 +32,7 @@ public class PersonController {
         try {
             newPerson = personService.savePerson(personDto);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.valueOf(500)).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.valueOf(400)).body(e.getMessage());
         }
 
         AnswerXml answerXml = null;

@@ -42,8 +42,11 @@ public class Person {
         this.patronymic = personDto.getPatronymic();
         this.birthDate = personDto.getBirthDate();
         this.gender = personDto.getGender();
-        this.document = new Document(personDto.getDocument());
-        document.setPerson(this);
+        if(personDto.getDocument() != null){
+            this.document = new Document(personDto.getDocument());
+            document.setPerson(this);
+        }
+
     }
 
 }
