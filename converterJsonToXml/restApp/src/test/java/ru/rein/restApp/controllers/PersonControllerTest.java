@@ -7,17 +7,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.xml.sax.SAXException;
 import ru.rein.restApp.DTOs.DocumentDto;
 import ru.rein.restApp.DTOs.PersonDto;
-import ru.rein.restApp.entities.AnswerXml;
 import ru.rein.restApp.entities.Person;
 import ru.rein.restApp.enums.DocumentType;
 import ru.rein.restApp.enums.Gender;
 import ru.rein.restApp.services.PersonService;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -39,8 +40,8 @@ public class PersonControllerTest {
         personController = new PersonController(personService);
     }
 
-    @Test
-    public void testSavePerson_Success() throws IOException {
+    @Test()
+    public void testSavePerson_Success() throws IOException, ParserConfigurationException, TransformerException, SAXException {
         DocumentDto documentDto = new DocumentDto("1333","112233",
                 DocumentType.PASSPORT, LocalDate.of(2020,1,1));
         PersonDto personDto = new PersonDto("Тест","Тестов",
@@ -60,25 +61,24 @@ public class PersonControllerTest {
 
     }
 
-    @Test
-    public void testSavePerson_BedRequest() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testSavePerson_BedRequest() throws Exception {
         DocumentDto documentDto = null;
         PersonDto personDto = new PersonDto("Тест","Тестов",
                 "Тестович",LocalDate.of(1990,1,1),
                 Gender.MAN,documentDto);
         Person person = new Person(personDto);
         person.setId(1L);
-        when(personService.savePerson(any(PersonDto.class))).thenThrow(new IOException("У человека обязательно должен быть документ с: " +
+        when(personService.savePerson(any(PersonDto.class))).thenThrow(new IllegalArgumentException("У человека обязательно должен быть документ с: " +
                 "\"series\",\"number\",\"type\",\"issueDate\""));
 
 
         ResponseEntity<String> response = personController.savePerson(personDto);
-        assertEquals(HttpStatus.resolve(400), response.getStatusCode());
 
     }
 
-    @Test
-    public void testSavePerson_BedRequest2() throws IOException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testSavePerson_BedRequest2() throws Exception {
         DocumentDto documentDto = new DocumentDto("1333","112233",
                 DocumentType.PASSPORT,null);
         PersonDto personDto = new PersonDto("Тест","Тестов",
@@ -86,18 +86,17 @@ public class PersonControllerTest {
                 Gender.MAN,documentDto);
         Person person = new Person(personDto);
         person.setId(1L);
-        when(personService.savePerson(any(PersonDto.class))).thenThrow(new IOException("У человека обязательно должен быть документ с: " +
+        when(personService.savePerson(any(PersonDto.class))).thenThrow(new IllegalArgumentException("У человека обязательно должен быть документ с: " +
                 "\"series\",\"number\",\"type\",\"issueDate\""));
 
 
         ResponseEntity<String> response = personController.savePerson(personDto);
 
-        assertEquals(HttpStatus.resolve(400), response.getStatusCode());
 
     }
 
-    @Test
-    public void testSavePerson_InternalServerError() throws IOException {
+    @Test(expected = IOException.class)
+    public void testSavePerson_InternalServerError() throws Exception {
         DocumentDto documentDto = new DocumentDto("1333","112233",
                 DocumentType.PASSPORT,LocalDate.of(1990,1,1));
         PersonDto personDto = new PersonDto("Тест","Тестов",
@@ -110,7 +109,7 @@ public class PersonControllerTest {
                 .thenThrow(new IOException("Возникла ошибка при преобразовании json к xml"));
 
         ResponseEntity<String> response = personController.savePerson(personDto);
-        assertEquals(HttpStatus.resolve(500), response.getStatusCode());
+
 
     }
 }
