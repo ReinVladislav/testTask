@@ -59,12 +59,12 @@ public class PersonService {
         this.answerXmlDAO = answerXmlDAO;
     }
 
-    public Person savePerson(PersonDto personDto) throws IOException {
+    public Person savePerson(PersonDto personDto) throws IllegalArgumentException {
         DocumentDto documentDto = personDto.getDocument();
         if(documentDto==null || documentDto.getIssueDate() == null || documentDto.getNumber() == null
                 || documentDto.getSeries() == null || documentDto.getType() == null) {
-            logger.warn("У человека нет документа или документ не корректный");
-            throw new IOException("У человека обязательно должен быть документ с: " +
+            logger.error("У человека нет документа или документ не корректный");
+            throw new IllegalArgumentException ("У человека обязательно должен быть документ с: " +
                     "\"series\",\"number\",\"type\",\"issueDate\"");
         }
         logger.info("Сохранение person в бд");
@@ -79,7 +79,7 @@ public class PersonService {
     }
 
 
-    public String sendRequestToSoap(PersonDto personDto) throws IOException {
+    public String sendRequestToSoap(PersonDto personDto) throws IOException, ParserConfigurationException, TransformerException, SAXException {
 
         String xml = jsonToXml(personDto);
 
@@ -119,19 +119,19 @@ public class PersonService {
                     InputSource is = new InputSource(new StringReader(responseString));
                     Document document = builder.parse(is);
                     return getElementXml(document.getDocumentElement(), "person");
-                } catch (ParserConfigurationException | SAXException e) {
+                } catch (ParserConfigurationException | SAXException | TransformerException e) {
                     logger.error("Не получилось взять тело из ответа soap");
-                    throw new RuntimeException(e);
+                    throw e;
                 }
             }
         } catch (IOException e) {
             logger.error("Возникла ошибка при обращении к soap");
-            throw new IOException("Возникла ошибка при преобразовании json к xml",e);
+            throw e;
         }
 
         return null;
     }
-    private static String getElementXml(Element parentElement, String elementTagName) {
+    private static String getElementXml(Element parentElement, String elementTagName) throws TransformerException {
         NodeList nodeList = parentElement.getElementsByTagName(elementTagName);
         if (nodeList.getLength() > 0) {
             Element element = (Element) nodeList.item(0);
@@ -140,7 +140,7 @@ public class PersonService {
         return null;
     }
 
-    private static String elementToString(Element element) {
+    private static String elementToString(Element element) throws TransformerException {
         StringWriter sw = new StringWriter();
         try {
             TransformerFactory tf = TransformerFactory.newInstance();
@@ -148,7 +148,8 @@ public class PersonService {
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             transformer.transform(new DOMSource(element), new StreamResult(sw));
         } catch (TransformerException e) {
-            e.printStackTrace();
+            logger.error("Ошибка преобразования элемента к строке" + e.getMessage());
+            throw e;
         }
         return sw.toString();
     }
