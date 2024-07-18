@@ -30,7 +30,6 @@ public class PersonController {
         Person newPerson = personService.savePerson(personDto);
         AnswerXml answerXml = new AnswerXml(personService.sendRequestToSoap(personDto), newPerson);
         personService.saveAnswerXml(answerXml);
-        System.out.println(answerXml);
         return ResponseEntity.status(HttpStatus.OK).body(answerXml.getXml());
     }
 }

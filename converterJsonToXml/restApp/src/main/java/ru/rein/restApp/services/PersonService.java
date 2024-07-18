@@ -1,5 +1,7 @@
 package ru.rein.restApp.services;
 
+
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -12,6 +14,8 @@ import org.apache.http.util.EntityUtils;
 import org.hibernate.SessionFactory;
 import org.json.JSONObject;
 import org.json.XML;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -41,6 +45,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PersonService {
+    private static final Logger logger = LoggerFactory.getLogger(PersonService.class);
 
     private final PersonDAO personDAO;
     private final AnswerXmlDAO answerXmlDAO;
@@ -52,16 +57,20 @@ public class PersonService {
     }
 
     public Person savePerson(PersonDto personDto){
+        logger.info("Сохранение person в бд");
         return personDAO.savePerson(new Person(personDto));
     }
 
 
 
     public void saveAnswerXml(AnswerXml answerXml){
+        logger.info("Сохранение ответа от soap в бд");
         answerXmlDAO.saveAnswerXml(answerXml);
     }
 
+
     public String sendRequestToSoap(PersonDto personDto) throws Exception {
+
         String xml = jsonToXml(personDto);
 
         String soapEndpointUrl = "http://localhost:8081/ws";
@@ -91,12 +100,9 @@ public class PersonService {
 
             if (responseEntity != null) {
 
-                String contentType = responseEntity.getContentType().getValue();
-                System.out.println("Response Content-Type: " + contentType);
 
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(responseEntity.getContent(), StandardCharsets.UTF_8))) {
                     String responseString = reader.lines().collect(Collectors.joining("\n"));
-                    System.out.println("Response: " + responseString);
 
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
