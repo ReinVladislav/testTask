@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  restapp:
+    build:
+      context: ./restapp
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  soapapp:
+    build:
+      context: ./soapapp
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
