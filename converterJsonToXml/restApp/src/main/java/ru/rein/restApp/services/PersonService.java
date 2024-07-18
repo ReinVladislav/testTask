@@ -23,14 +23,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import ru.rein.restApp.DAO.AnswerXmlDAO;
 import ru.rein.restApp.DAO.PersonDAO;
+import ru.rein.restApp.DTOs.DocumentDto;
 import ru.rein.restApp.DTOs.PersonDto;
 import ru.rein.restApp.entities.AnswerXml;
 import ru.rein.restApp.entities.Person;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -56,7 +59,14 @@ public class PersonService {
         this.answerXmlDAO = answerXmlDAO;
     }
 
-    public Person savePerson(PersonDto personDto){
+    public Person savePerson(PersonDto personDto) throws IOException {
+        DocumentDto documentDto = personDto.getDocument();
+        if(documentDto==null || documentDto.getIssueDate() == null || documentDto.getNumber() == null
+                || documentDto.getSeries() == null || documentDto.getType() == null) {
+            logger.warn("У человека нет документа или документ не корректный");
+            throw new IOException("У человека обязательно должен быть документ с: " +
+                    "\"series\",\"number\",\"type\",\"issueDate\"");
+        }
         logger.info("Сохранение person в бд");
         return personDAO.savePerson(new Person(personDto));
     }
@@ -69,7 +79,7 @@ public class PersonService {
     }
 
 
-    public String sendRequestToSoap(PersonDto personDto) throws Exception {
+    public String sendRequestToSoap(PersonDto personDto) throws IOException {
 
         String xml = jsonToXml(personDto);
 
@@ -109,8 +119,14 @@ public class PersonService {
                     InputSource is = new InputSource(new StringReader(responseString));
                     Document document = builder.parse(is);
                     return getElementXml(document.getDocumentElement(), "person");
+                } catch (ParserConfigurationException | SAXException e) {
+                    logger.error("Не получилось взять тело из ответа soap");
+                    throw new RuntimeException(e);
                 }
             }
+        } catch (IOException e) {
+            logger.error("Возникла ошибка при обращении к soap");
+            throw new IOException("Возникла ошибка при преобразовании json к xml",e);
         }
 
         return null;

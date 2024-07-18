@@ -3,6 +3,7 @@ package ru.rein.restApp.entities;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.ToString;
 import ru.rein.restApp.DTOs.PersonDto;
 import ru.rein.restApp.enums.Gender;
