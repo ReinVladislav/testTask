@@ -1,6 +1,7 @@
 package ru.rein.restApp.entities;
 
 
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -21,8 +22,10 @@ public class Document {
     @Column(name = "id")
     private Long id;
     @Column(name = "series")
+    @Pattern(regexp = "\\d+", message = "Series должна содержать только цифры")
     private String series;
     @Column(name = "number")
+    @Pattern(regexp = "\\d+", message = "Number должен содержать только цифры")
     private String number;
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
