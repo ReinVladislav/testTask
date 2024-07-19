@@ -91,7 +91,7 @@ public class PersonService {
                         "   <SOAP-ENV:Header/>\n" +
                         "   <SOAP-ENV:Body>\n" +
                         "      <ex:getPersonRequest>\n" +
-                        "         %s\n" +
+                        "         <text><![CDATA[%s]]></text>\n" +
                         "      </ex:getPersonRequest>\n" +
                         "   </SOAP-ENV:Body>\n" +
                         "</SOAP-ENV:Envelope>", xml.trim());
