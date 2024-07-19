@@ -1,14 +1,15 @@
 ## Начало работы
 
 1. Необходимо создать базу данных PostgreSQL "testTask"
-2. Указать в файле restApp\src\main\resources\hibernate.properties параметры для подключения к бд:
+2. Создать в ней таблицы, sql скрипт для создания таблиц в файле restApp\src\main\resources\tables.sql   
+3. Указать в файле restApp\src\main\resources\hibernate.properties параметры для подключения к бд:
 
     - hibernate.connection.url
     - hibernate.connection.username
     - hibernate.connection.password
 
-3. Запустить Spring Boot конфигурацию SoapAppApplication
-4. Запустить Spring Boot конфигурацию RestAppApplication
+4. Запустить Spring Boot конфигурацию SoapAppApplication
+5. Запустить Spring Boot конфигурацию RestAppApplication
 
 ## Пример запроса 
 
